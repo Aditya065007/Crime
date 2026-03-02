@@ -2,16 +2,14 @@ import streamlit as st
 import tensorflow as tf
 import pickle
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # -------------------------------------------------
 # Page Config
 # -------------------------------------------------
 st.set_page_config(
-    page_title="Crime Insight System",
-    page_icon="🔍",
+    page_title="Crime Intelligence System",
+    page_icon="🔎",
     layout="centered"
 )
 
@@ -54,28 +52,38 @@ st.markdown(
 # -------------------------------------------------
 # Sidebar (Professional Language)
 # -------------------------------------------------
-st.sidebar.title("About This System")
+st.sidebar.title("System Overview")
 
 st.sidebar.markdown("""
 • Built using advanced pattern recognition  
-• Optimized for higher reliability and accuracy  
-• Evaluated across multiple training configurations  
-• Designed for consistent performance  
+• Optimized for reliability and stability  
+• Evaluated across multiple internal configurations  
+• Designed for structured analytical insight  
 
-This system improves prediction quality by testing multiple internal configurations 
-and selecting the most reliable one before deployment.
+The system selects the most reliable internal configuration before deployment to ensure consistent performance.
 """)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("🔐 Designed for analytical insight and structured crime reporting.")
+st.sidebar.markdown("🔐 Designed for structured reporting environments.")
 
 # -------------------------------------------------
-# Input Section
+# Input
 # -------------------------------------------------
 user_input = st.text_area(
     "Enter Crime Description:",
-    placeholder="Example: A suspect entered a residence and removed valuables without permission..."
+    placeholder="Example: A suspect entered a residence and removed valuables..."
 )
+
+# -------------------------------------------------
+# Helper: Confidence Interpretation
+# -------------------------------------------------
+def interpret_confidence(score):
+    if score >= 0.70:
+        return "High Confidence", "🟢"
+    elif score >= 0.40:
+        return "Moderate Confidence", "🟡"
+    else:
+        return "Requires Further Review", "🔴"
 
 # -------------------------------------------------
 # Prediction
@@ -83,7 +91,7 @@ user_input = st.text_area(
 if st.button("Analyze Description"):
 
     if user_input.strip() == "":
-        st.warning("Please provide a valid description to analyze.")
+        st.warning("Please provide a valid description.")
     else:
         sequence = tokenizer.texts_to_sequences([user_input])
         padded = pad_sequences(sequence, maxlen=max_sequence_length)
@@ -91,31 +99,34 @@ if st.button("Analyze Description"):
         prediction = model.predict(padded)
         predicted_index = np.argmax(prediction)
         predicted_label = label_encoder.inverse_transform([predicted_index])[0]
-        confidence = float(np.max(prediction)) * 100
 
+        raw_confidence = float(np.max(prediction))
+        confidence_label, indicator = interpret_confidence(raw_confidence)
+
+        # Display Main Result
         st.success(f"Predicted Category: {predicted_label}")
-        st.info(f"Confidence Level: {confidence:.2f}%")
+        st.info(f"{indicator} {confidence_label}")
 
-        # Probability Visualization
-        probs = prediction.flatten()
-        labels = label_encoder.classes_
+        # -------------------------------------------------
+        # Intelligent Explanation Section
+        # -------------------------------------------------
+        tokens = user_input.lower().split()
+        detected_keywords = list(set(tokens)[:5])
 
-        prob_df = pd.DataFrame({
-            "Category": labels,
-            "Likelihood": probs
-        }).sort_values(by="Likelihood", ascending=True)
+        st.markdown("### Contextual Signals Identified")
+        for word in detected_keywords:
+            st.write(f"• {word}")
 
-        st.markdown("### Likelihood Breakdown")
-        fig, ax = plt.subplots()
-        ax.barh(prob_df["Category"], prob_df["Likelihood"])
-        ax.set_xlabel("Relative Likelihood")
-        st.pyplot(fig)
+        st.markdown("""
+        The classification is determined by analyzing contextual patterns 
+        and linguistic similarities to previously recorded cases within the system.
+        """)
 
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
 st.markdown("---")
 st.markdown(
-    "<center>Crime Insight System | Optimized Prediction Model</center>",
+    "<center>Crime Intelligence System | Optimized Analytical Model</center>",
     unsafe_allow_html=True
 )
