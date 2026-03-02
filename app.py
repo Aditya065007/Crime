@@ -111,7 +111,8 @@ if st.button("Analyze Description"):
         # Intelligent Explanation Section
         # -------------------------------------------------
         tokens = user_input.lower().split()
-        detected_keywords = list(set(tokens)[:5])
+        unique_tokens = list(set(tokens))
+        detected_keywords = unique_tokens[:5]
 
         st.markdown("### Contextual Signals Identified")
         for word in detected_keywords:
@@ -130,3 +131,4 @@ st.markdown(
     "<center>Crime Intelligence System | Optimized Analytical Model</center>",
     unsafe_allow_html=True
 )
+
