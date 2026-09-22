@@ -1,6 +1,6 @@
 # Crime Description Classifier
 
-**Live App:** [Add your Streamlit link here]
+**Live App:** https://aru3ysjbbprr9eb7ot7m3v.streamlit.app/
 
 A Streamlit app that classifies a short, free-text crime description into one of four categories using a lightweight neural text classifier. This was built as a text-classification learning exercise on a small dataset — it is not a production system and is not intended for operational or law-enforcement use.
 
